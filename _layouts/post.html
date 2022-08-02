@@ -1,29 +1,28 @@
 ---
 layout: default
 ---
-<article class="mdui-card">
-    <div class="mdui-card-primary">
-        <div class="mdui-card-primary-title mdui-m-b-1">{{ page.title | escape }}</div>
-        <div class="mdui-card-primary-subtitle">
-            {%- assign date_format = site.minima.date_format | default: "%Y-%m-%d" -%}
-            <i class="mdui-icon material-icons mdui-m-r-1">&#xe192;</i>{{ page.date | date: date_format }}
-            {%- if page.author -%}
-                <span class="mdui-m-l-1"><i class="mdui-icon material-icons mdui-m-r-1">&#xe7fd;</i>{{ page.author }}</span>
-            {%- endif -%}
-            {%- if page.categories -%}
-                <span class="mdui-m-l-1"><i class="mdui-icon material-icons mdui-m-r-1">&#xe866;</i>{{ page.categories }}</span>
-            {%- endif -%}
-        </div>
-    </div>
-    <div class="mdui-card-content mdui-p-t-0">
-        <div class="mdui-divider"></div>
-        <div class="mdui-typo mdui-p-t-2">
-            {{ content }}
-        </div>
-        {%- if site.disqus.shortname -%}
-            <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
-            {%- include disqus_comments.html -%}
+<article class="mdui-typo">
+    <h1>{{ page.title | escape }}</h1>
+    <p class="mdui-text-color-theme-secondary">
+        {%- assign date_format = site.minima.date_format | default: "%Y-%m-%d" -%}
+        <i class="mdui-icon material-icons mdui-m-r-1">&#xe192;</i>{{ page.date | date: date_format }}
+        {%- if page.author -%}
+            <span class="mdui-m-l-1"><i class="mdui-icon material-icons mdui-m-r-1">&#xe7fd;</i>{{ page.author }}</span>
         {%- endif -%}
-        <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
+        {%- if page.categories -%}
+            <span class="mdui-m-l-1"><i class="mdui-icon material-icons mdui-m-r-1">&#xe866;</i>{{ page.categories }}</span>
+        {%- endif -%}
+    </p>
+
+    <div class="mdui-divider"></div>
+
+    <div class="mdui-p-t-2">
+        {{ content }}
     </div>
+
+    {%- if site.disqus.shortname -%}
+        <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+        {%- include disqus_comments.html -%}
+    {%- endif -%}
+    <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>

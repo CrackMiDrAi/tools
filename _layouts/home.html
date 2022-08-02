@@ -9,31 +9,35 @@ layout: default
 {{ content }}
 
 {%- if site.posts.size > 0 -%}
-    <h1>{{ page.list_title | default: "最新文章" }}</h1>
-    {%- for post in site.posts -%}
-        {%- assign date_format = site.minima.date_format | default: "%Y-%m-%d" -%}
-        <section class="mdui-card mdui-m-t-2 mdui-m-b-2">
-            <div class="mdui-card-primary">
-                <div class="mdui-card-primary-title mdui-m-b-1">{{ post.title | escape }}</div>
-                <div class="mdui-card-primary-subtitle">
-                    {%- assign date_format = site.minima.date_format | default: "%Y-%m-%d" -%}
-                    <i class="mdui-icon material-icons mdui-m-r-1">&#xe192;</i>{{ post.date | date: date_format }}
-                    {%- if post.author -%}
-                        <span class="mdui-m-l-1"><i class="mdui-icon material-icons mdui-m-r-1">&#xe7fd;</i>{{ post.author }}</span>
+    <h1 style="margin:1.2em 0 0.67em;">{{ page.list_title | default: "最新文章" }}</h1>
+    <div class="mdui-row mdui-row-xs-1 mdui-row-md-2 mdui-row-lg-3">
+        {%- for post in site.posts -%}
+            {%- assign date_format = site.minima.date_format | default: "%Y-%m-%d" -%}
+            <div class="mdui-col mdui-p-t-1 mdui-p-b-1">
+                <section class="mdui-card">
+                    <div class="mdui-card-primary">
+                        <div class="mdui-card-primary-title mdui-m-b-1">{{ post.title | escape }}</div>
+                        <div class="mdui-card-primary-subtitle">
+                            {%- assign date_format = site.minima.date_format | default: "%Y-%m-%d" -%}
+                            <i class="mdui-icon material-icons mdui-m-r-1">&#xe192;</i>{{ post.date | date: date_format }}
+                            {%- if post.author -%}
+                                <span class="mdui-m-l-1"><i class="mdui-icon material-icons mdui-m-r-1">&#xe7fd;</i>{{ post.author }}</span>
+                            {%- endif -%}
+                            {%- if post.categories -%}
+                                <span class="mdui-m-l-1"><i class="mdui-icon material-icons mdui-m-r-1">&#xe866;</i>{{ post.categories }}</span>
+                            {%- endif -%}
+                        </div>
+                    </div>
+                    {%- if site.show_excerpts -%}
+                        <div class="mdui-card-content mdui-typo mdui-p-t-0 mdui-p-b-0">
+                            {{ post.excerpt }}
+                        </div>
                     {%- endif -%}
-                    {%- if post.categories -%}
-                        <span class="mdui-m-l-1"><i class="mdui-icon material-icons mdui-m-r-1">&#xe866;</i>{{ post.categories }}</span>
-                    {%- endif -%}
-                </div>
+                    <div class="mdui-card-actions">
+                        <a href="{{ post.url | relative_url }}" class="mdui-btn mdui-ripple mdui-float-right mdui-text-color-theme-accent">查看<i class="mdui-icon material-icons">&#xe315;</i></a>
+                    </div>
+                </section>
             </div>
-            {%- if site.show_excerpts -%}
-                <div class="mdui-card-content mdui-typo mdui-p-t-0 mdui-p-b-0">
-                    {{ post.excerpt }}
-                </div>
-            {%- endif -%}
-            <div class="mdui-card-actions">
-                <a href="{{ post.url | relative_url }}" class="mdui-btn mdui-ripple mdui-float-right mdui-text-color-theme-accent">查看<i class="mdui-icon material-icons">&#xe315;</i></a>
-            </div>
-        </section>
-    {%- endfor -%}
+        {%- endfor -%}
+    </div>
 {%- endif -%}
