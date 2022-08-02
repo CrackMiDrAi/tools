@@ -1,0 +1,107 @@
+---
+layout: post
+title: WebADB example
+author: MisaLiu
+date: 2022-08-03
+categories: test
+---
+
+<p>本页是小爱老师在线工具是测试/模板页，推荐如果需要增加新功能可复制此页内容稍作修改后发布。请记住遵守 Jekyll 相关规则。</p>
+
+<hr />
+
+<p>Step 1: <button class="mdui-btn mdui-ripple mdui-btn-raised mdui-color-theme-accent" id="button-select-device">选择设备</button></p>
+
+<p>Step 2: <button class="mdui-btn mdui-ripple mdui-btn-raised mdui-color-theme-accent" id="button-connect-device">连接设备</button></p>
+
+<p>Step 3: <button class="mdui-btn mdui-ripple mdui-btn-raised mdui-color-theme-accent" id="button-run-test-command">运行 whoami 并返回结果</button></p>
+
+<hr />
+
+<p>Have fun!</p>
+
+<script>
+
+var current = {
+    webusb : undefined,
+    adb    : undefined
+};
+
+mdui.$('#button-select-device').on('click', async () =>
+{
+    mdui.$.showOverlay();
+    mdui.$.lockScreen();
+
+    current.webusb = await Adb.open('WebUSB');
+
+    mdui.$.hideOverlay();
+    mdui.$.unlockScreen();
+});
+
+mdui.$('#button-connect-device').on('click', async () =>
+{
+    if (!current.webusb)
+    {
+        mdui.alert('您还未选择设备，请先选择一个设备！', '提示');
+        return;
+    }
+
+    mdui.$.showOverlay();
+    mdui.$.lockScreen();
+
+    current.adb = await current.webusb.connectAdb('host::');
+
+    mdui.$.hideOverlay();
+    mdui.$.unlockScreen();
+});
+
+mdui.$('#button-run-test-command').on('click', async () =>
+{
+    if (!current.adb)
+    {
+        mdui.alert('您还未连接设备，请先连接到设备！', '提示');
+        return;
+    }
+
+    mdui.$.showOverlay();
+    mdui.$.lockScreen();
+
+    let shell = await current.adb.shell('whoami');
+    let received = await shell.receive();
+    let result = String.fromCharCode.apply(null, new Uint8Array(received.data.buffer));
+
+    mdui.$.hideOverlay();
+    mdui.$.unlockScreen();
+
+    mdui.alert(
+        '运行结果：<br>' +
+        '<div class="mdui-typo mdui-m-t-2"><pre><code>' + result + '</code></pre></div>'
+    , '运行成功');
+});
+
+
+window.addEventListener('error', (err) =>
+{
+    mdui.$.hideOverlay();
+    mdui.$.unlockScreen();
+
+    mdui.alert(
+        '错误信息：<br>' +
+        '<div class="mdui-typo mdui-m-t-2"><pre><code>' + (err.error.stack ? err.error.stack : err.error.message) + '</code></pre></div>'
+    , '出错啦！');
+});
+
+window.addEventListener('unhandledrejection', (err) =>
+{
+    if ((err.reason.stack ? err.reason.stack : err.reason.message) == 'Error: Failed to execute \'reset\' on \'USBDevice\': Unable to reset the device.') return;
+
+    mdui.$.hideOverlay();
+    mdui.$.unlockScreen();
+
+    mdui.alert(
+        '错误信息：<br>' +
+        '<div class="mdui-typo mdui-m-t-2"><pre><code>' + (err.reason.stack ? err.reason.stack : err.reason.message) + '</code></pre></div>'
+    , '出错啦！');
+});
+
+</script>
