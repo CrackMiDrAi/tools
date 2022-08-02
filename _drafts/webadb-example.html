@@ -32,7 +32,7 @@ mdui.$('#button-select-device').on('click', async () =>
     mdui.$.showOverlay();
     mdui.$.lockScreen();
 
-    current.webusb = await Adb.open('WebUSB');
+    current.webusb = await Adb.open('WebUSB'); // 调起浏览器的选择设备弹窗
 
     mdui.$.hideOverlay();
     mdui.$.unlockScreen();
@@ -49,7 +49,7 @@ mdui.$('#button-connect-device').on('click', async () =>
     mdui.$.showOverlay();
     mdui.$.lockScreen();
 
-    current.adb = await current.webusb.connectAdb('host::');
+    current.adb = await current.webusb.connectAdb('host::'); // 向设备申请通过 adb 连接
 
     mdui.$.hideOverlay();
     mdui.$.unlockScreen();
@@ -66,9 +66,9 @@ mdui.$('#button-run-test-command').on('click', async () =>
     mdui.$.showOverlay();
     mdui.$.lockScreen();
 
-    let shell = await current.adb.shell('whoami');
-    let received = await shell.receive();
-    let result = String.fromCharCode.apply(null, new Uint8Array(received.data.buffer));
+    let shell = await current.adb.shell('whoami'); // 执行 adb shell 指令
+    let received = await shell.receive(); // 获取执行结果
+    let result = String.fromCharCode.apply(null, new Uint8Array(received.data.buffer)); // 执行结果转字符串
 
     mdui.$.hideOverlay();
     mdui.$.unlockScreen();
@@ -79,7 +79,7 @@ mdui.$('#button-run-test-command').on('click', async () =>
     , '运行成功');
 });
 
-
+// 下面两个是全局错误监听，用于向用户展示程序遇到的错误方便反馈问题，勿删
 window.addEventListener('error', (err) =>
 {
     mdui.$.hideOverlay();
@@ -90,7 +90,6 @@ window.addEventListener('error', (err) =>
         '<div class="mdui-typo mdui-m-t-2"><pre><code>' + (err.error.stack ? err.error.stack : err.error.message) + '</code></pre></div>'
     , '出错啦！');
 });
-
 window.addEventListener('unhandledrejection', (err) =>
 {
     if ((err.reason.stack ? err.reason.stack : err.reason.message) == 'Error: Failed to execute \'reset\' on \'USBDevice\': Unable to reset the device.') return;
