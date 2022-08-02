@@ -1,0 +1,35 @@
+/* ===文章内代码高亮=== */
+/* 代码文字居左 */
+.mdui-typo figure.highlight {
+    text-align: left;
+}
+/* 修正代码块底部无外间距 */
+.mdui-typo div[class*="highlighter-"] {
+    margin: 0 0 1.2em 0;
+}
+/* 修改代码块配色 */
+.mdui-typo div[class*="highlighter-"] pre {
+    background-color: #282923;
+    color: #FFFFFF;
+}
+.mdui-typo div[class*="highlighter-"] pre code {
+    padding: 0;
+    background-color: #282923;
+    color: #FFFFFF;
+}
+/* 修改代码高亮行号样式 */
+.mdui-typo div[class*="highlighter-"] pre code table.hljs-ln td.hljs-ln-line.hljs-ln-numbers {
+    color: #90918B;
+    border-right: 1px solid #343531;
+    padding-right: 14px;
+}
+.mdui-typo div[class*="highlighter-"] pre code table.hljs-ln td.hljs-ln-line.hljs-ln-code {
+    padding-left: 14px;
+}
+
+footer .mdui-typo {
+    line-height: 1.4;
+}
+footer .mdui-typo p {
+    margin-bottom: 6px;
+}

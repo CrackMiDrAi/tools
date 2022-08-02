@@ -1,0 +1,19 @@
+<section class="mdui-drawer" aria-label="Drawer" id="site-drawer">
+    <section class="mdui-list" aria-label="Drawer list">
+        <a class="mdui-list-item mdui-ripple" href="{{ "/" | relative_url }}">
+            <i class="mdui-list-item-icon mdui-icon material-icons">&#xe88a;</i>
+            <div class="mdui-list-item-content">首页</div>
+        </a>
+        {%- if page_paths -%}
+            {%- for path in page_paths -%}
+                {%- assign my_page = site.pages | where: "path", path | first -%}
+                {%- if my_page.title -%}
+                    <a class="mdui-list-item mdui-ripple" href="{{ my_page.url | relative_url }}">
+                        <i class="mdui-list-item-icon mdui-icon material-icons">&#xe157;</i>
+                        <div class="mdui-list-item-content">{{ my_page.title | escape }}</div>
+                    </a>
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endif -%}
+    </section>
+</section>

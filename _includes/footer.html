@@ -1,0 +1,13 @@
+<footer class="mdui-text-center">
+    <div class="mdui-divider"></div>
+    <div class="mdui-container mdui-typo mdui-p-t-1 mdui-p-b-1">
+        <p>Copyright <a rel="author" href="{{ "/" | relative_url }}">{{ site.title | escape }}</a></p>
+        <p>{{- site.description | escape -}}</p>
+        <p class="rss-subscribe">通过 <a href="{{ "/feed.xml" | relative_url }}">RSS</a> 获取最新文章</p>
+    </div>
+</footer>
+
+<script src="{{ "/assets/js/mdui.min.js" | relative_url }}"></script>
+<script src="{{ "/assets/js/highlight.min.js" | relative_url }}"></script>
+<script src="{{ "/assets/js/highlight-line-numbers.min.js" | relative_url }}"></script>
+<script>hljs.highlightAll();hljs.initLineNumbersOnLoad();</script>

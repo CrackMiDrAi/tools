@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+    {%- include head.html -%}
+
+    <body class="mdui-appbar-with-toolbar mdui-drawer-body-left mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">
+        {%- include header.html -%}
+        {%- include drawer.html -%}
+
+        <main class="mdui-container mdui-m-t-2 mdui-m-b-2" aria-label="Content">
+        {{ content }}
+        </main>
+
+        {%- include footer.html -%}
+    </body>
+</html>
