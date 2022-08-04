@@ -14,7 +14,7 @@ categories: test
 
 <p>Step 2: <button class="mdui-btn mdui-ripple mdui-btn-raised mdui-color-theme-accent" id="button-connect-device">连接设备</button></p>
 
-<p>Step 3: <button class="mdui-btn mdui-ripple mdui-btn-raised mdui-color-theme-accent" id="button-run-test-command">运行 whoami 并返回结果</button></p>
+<p>Step 3: <button class="mdui-btn mdui-ripple mdui-btn-raised mdui-color-theme-accent" id="button-run-test-command">运行 ls -lh 并返回结果</button></p>
 
 <hr />
 
@@ -24,18 +24,22 @@ categories: test
 
 var current = {
     webusb : undefined,
-    adb    : undefined
+    adb    : undefined,
+    dialog : undefined
 };
 
 mdui.$('#button-select-device').on('click', async () =>
 {
-    mdui.$.showOverlay();
-    mdui.$.lockScreen();
-
+    current.dialog = mdui.dialog({
+        title: '等待选择设备',
+        content: '请在浏览器弹出的窗口中选择您的 adb 设备...',
+        history: false,
+        modal: true,
+        closeOnEsc: false
+    });
     current.webusb = await Adb.open('WebUSB'); // 调起浏览器的选择设备弹窗
-
-    mdui.$.hideOverlay();
-    mdui.$.unlockScreen();
+    current.dialog.close();
+    current.dialog = undefined;
 });
 
 mdui.$('#button-connect-device').on('click', async () =>
@@ -46,13 +50,16 @@ mdui.$('#button-connect-device').on('click', async () =>
         return;
     }
 
-    mdui.$.showOverlay();
-    mdui.$.lockScreen();
-
+    current.dialog = mdui.dialog({
+        title: '等待同意连接',
+        content: '请在您的手机上同意 adb 连接...',
+        history: false,
+        modal: true,
+        closeOnEsc: false
+    });
     current.adb = await current.webusb.connectAdb('host::'); // 向设备申请通过 adb 连接
-
-    mdui.$.hideOverlay();
-    mdui.$.unlockScreen();
+    current.dialog.close();
+    current.dialog = undefined;
 });
 
 mdui.$('#button-run-test-command').on('click', async () =>
@@ -63,25 +70,63 @@ mdui.$('#button-run-test-command').on('click', async () =>
         return;
     }
 
-    mdui.$.showOverlay();
-    mdui.$.lockScreen();
+    current.dialog = mdui.dialog({
+        title: '正在运行指令...',
+        content: '<div class="mdui-typo"><pre><code id="div-adb-shell-result"></code></pre></div>',
+        history: false,
+        modal: true,
+        closeOnEsc: false,
+        buttons: [
+            {
+                text: 'OK'
+            }
+        ],
+        onClosed: () =>
+        {
+            current.dialog = undefined;
+        }
+    });
+    let resultDialogDom = current.dialog.$element;
+    let resultDialogTitle = resultDialogDom.children('div.mdui-dialog-title');
+    let resultDialogContent = (
+        resultDialogDom
+            .children('div.mdui-dialog-content')
+            .children('div.mdui-typo')
+            .children('pre')
+            .children('code#div-adb-shell-result')
+        ); // 看着很怪但是只有这样才能跑所以别动
 
-    let shell = await current.adb.shell('whoami'); // 执行 adb shell 指令
-    let received = await shell.receive(); // 获取执行结果
-    let result = String.fromCharCode.apply(null, new Uint8Array(received.data.buffer)); // 执行结果转字符串
+    resultDialogDom.children('div.mdui-dialog-actions').addClass('mdui-hidden');
 
-    mdui.$.hideOverlay();
-    mdui.$.unlockScreen();
+    try
+    {
+        let decoder = new TextDecoder('utf-8'); // 这是转码器，用来把收到的结果转成字符串
+        let shell = await current.adb.shell('ls -lh'); // 执行 adb shell 指令
+        let received = await shell.receive(); // 获取执行结果
 
-    mdui.alert(
-        '运行结果：<br>' +
-        '<div class="mdui-typo mdui-m-t-2"><pre><code>' + result + '</code></pre></div>'
-    , '运行成功');
+        while (received.data != null) // 执行结果转字符串，并实时推送传来的结果
+        {
+            resultDialogContent.html((i, oldContent) => oldContent.toString() + decoder.decode(received.data));
+            current.dialog.handleUpdate();
+            received = await shell.receive();
+        }
+
+        resultDialogTitle.text('指令运行完成');
+    }
+    catch (e)
+    {
+        resultDialogContent.html(err.reason.stack ? err.reason.stack : err.reason.message);
+        resultDialogTitle.text('指令运行失败');
+    }
+    
+    resultDialogDom.children('div.mdui-dialog-actions').removeClass('mdui-hidden');
+    current.dialog.handleUpdate();
 });
 
 // 下面两个是全局错误监听，用于向用户展示程序遇到的错误方便反馈问题，勿删
 window.addEventListener('error', (err) =>
 {
+    if (current.dialog) current.dialog.close();
     mdui.$.hideOverlay();
     mdui.$.unlockScreen();
 
@@ -94,6 +139,7 @@ window.addEventListener('unhandledrejection', (err) =>
 {
     if ((err.reason.stack ? err.reason.stack : err.reason.message) == 'Error: Failed to execute \'reset\' on \'USBDevice\': Unable to reset the device.') return;
 
+    if (current.dialog) current.dialog.close();
     mdui.$.hideOverlay();
     mdui.$.unlockScreen();
 
