@@ -137,8 +137,15 @@ async function runShells(_command)
             .children('code#div-adb-shell-result')
         ); // 看着很怪但是只有这样才能跑所以别动
 
-    try { commands = _command.slice(); }
-    catch (e) { commands = [ _command ]; }
+    if (typeof _command == 'string')
+    {
+        commands = [ _command ];
+    }
+    else
+    {
+        try { commands = _command.slice(); }
+        catch (e) { commands = [ _command ]; }
+    }
 
     resultDialogDom.children('div.mdui-dialog-actions').addClass('mdui-hidden');
 
