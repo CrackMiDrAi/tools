@@ -27,6 +27,12 @@
     padding-left: 14px;
 }
 
+/* 修改 mdui-dialog 动画 */
+.mdui-dialog {
+    transition-property: top, left, transform, opacity, visibility, -webkit-transform;
+    -webkit-transition-property: top, left, transform, opacity, visibility, -webkit-transform;
+}
+
 footer .mdui-typo {
     line-height: 1.4;
 }
